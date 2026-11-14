@@ -1,0 +1,413 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AstroCare: an educational astronaut health check-in and monitoring prototype for space missions." />
+  <meta name="theme-color" content="#0b1020" />
+  <title>AstroCare | Your Health Companion in Space</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#dashboard">Skip to main content</a>
+
+  <!-- ===== NAVIGATION ===== -->
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a href="#dashboard" class="logo" aria-label="AstroCare home">
+        <svg width="36" height="36" viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="32" cy="32" r="12" fill="#22d3ee"/>
+          <ellipse cx="32" cy="32" rx="28" ry="9" fill="none" stroke="#8b5cf6" stroke-width="3" transform="rotate(-25 32 32)"/>
+        </svg>
+        <span class="logo-text">
+          <strong>AstroCare</strong>
+          <small>Monitor. Understand. Stay Mission-Ready.</small>
+        </span>
+      </a>
+
+      <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="mainNav">
+        <span class="sr-only">Toggle menu</span>&#9776;
+      </button>
+
+      <nav id="mainNav" aria-label="Main navigation">
+        <ul>
+          <li><a href="#dashboard">Dashboard</a></li>
+          <li><a href="#checkin">Daily Check-in</a></li>
+          <li><a href="#trends">Health Trends</a></li>
+          <li><a href="#hazards">Space Hazards</a></li>
+          <li><a href="#about">About</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- ===== DASHBOARD ===== -->
+    <section id="dashboard" class="section">
+      <div class="container">
+        <div class="welcome">
+          <div>
+            <h1>Welcome aboard, Astronaut</h1>
+            <p class="muted">
+              AstroCare helps you record how you feel each day,
+              understand your health history, and notice changes over time.
+            </p>
+          </div>
+          <div class="pill" title="Prototype counter that starts on your first visit">
+            Mission Day <strong id="missionDay">1</strong>
+          </div>
+        </div>
+
+        <p class="data-badge" id="dataBadge" role="status"></p>
+
+        <div class="grid grid-4">
+          <article class="card metric">
+            <h2>Heart Rate</h2>
+            <p class="value"><span id="hrValue">--</span> <small>BPM</small></p>
+            <p class="delta" id="hrDelta"></p>
+          </article>
+
+          <article class="card metric">
+            <h2>Body Temperature</h2>
+            <p class="value"><span id="tempValue">--</span> <small>&deg;C</small></p>
+            <p class="delta" id="tempDelta"></p>
+          </article>
+
+          <article class="card metric">
+            <h2>Sleep Duration</h2>
+            <p class="value"><span id="sleepValue">--</span> <small>hours</small></p>
+            <p class="delta" id="sleepDelta"></p>
+          </article>
+
+          <article class="card metric">
+            <h2>Mood</h2>
+            <p class="value"><span id="moodValue">--</span></p>
+            <p class="delta" id="moodDelta"></p>
+          </article>
+        </div>
+
+        <p class="notice">
+          Educational prototype only. AstroCare is not a medical device.
+          It does not diagnose illness or replace a flight surgeon or crew
+          medical officer. Values displayed in the prototype are illustrative.
+        </p>
+      </div>
+    </section>
+
+    <!-- ===== DAILY CHECK-IN ===== -->
+    <section id="checkin" class="section alt">
+      <div class="container narrow">
+        <h2 class="section-title">Daily Health Check-in</h2>
+        <p class="muted">
+          Record how you are today. Your entries are saved only in this browser.
+        </p>
+
+        <form id="checkinForm" class="card form" novalidate>
+          <div class="field">
+            <label for="heartRate">Heart rate (BPM)</label>
+            <input type="number" id="heartRate" name="heartRate"
+              inputmode="numeric" step="1" required
+              aria-describedby="hrError" />
+            <span class="error" id="hrError" aria-live="polite"></span>
+          </div>
+
+          <div class="field">
+            <label for="temperature">Body temperature (&deg;C)</label>
+            <input type="number" id="temperature" name="temperature"
+              inputmode="decimal" step="0.1" required
+              aria-describedby="tempError" />
+            <span class="error" id="tempError" aria-live="polite"></span>
+          </div>
+
+          <div class="field">
+            <label for="sleep">Sleep duration (hours)</label>
+            <input type="number" id="sleep" name="sleep"
+              inputmode="decimal" step="0.1" required
+              aria-describedby="sleepError" />
+            <span class="error" id="sleepError" aria-live="polite"></span>
+          </div>
+
+          <div class="field">
+            <label for="mood">Mood</label>
+            <select id="mood" name="mood" required aria-describedby="moodError">
+              <option value="">Select mood...</option>
+              <option>Good</option>
+              <option>Okay</option>
+              <option>Low</option>
+              <option>Stressed</option>
+              <option>Unwell</option>
+            </select>
+            <span class="error" id="moodError" aria-live="polite"></span>
+          </div>
+
+          <div class="field full">
+            <label for="notes">Notes or symptoms (optional)</label>
+            <textarea id="notes" name="notes" rows="3" maxlength="300"
+              placeholder="Anything that feels different today?"></textarea>
+          </div>
+
+          <div class="field full actions">
+            <button type="submit" class="btn primary">Save check-in</button>
+            <button type="reset" class="btn ghost" id="resetBtn">Clear form</button>
+          </div>
+
+          <p id="formStatus" class="status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ===== HEALTH TRENDS ===== -->
+    <section id="trends" class="section">
+      <div class="container">
+        <h2 class="section-title">Health Trends</h2>
+        <p class="muted" id="trendNote"></p>
+
+        <div class="card">
+          <div class="chart-controls">
+            <label for="metricSelect">Show on chart:</label>
+            <select id="metricSelect">
+              <option value="heartRate">Heart rate (BPM)</option>
+              <option value="temperature">Body temperature (&deg;C)</option>
+              <option value="sleep">Sleep duration (hours)</option>
+            </select>
+          </div>
+
+          <canvas id="trendChart" role="img"
+            aria-label="Line chart of the selected health indicator over recent check-ins. The same data appears in the table below.">
+          </canvas>
+        </div>
+
+        <div class="card table-card">
+          <div class="table-head">
+            <h3>Recent check-ins</h3>
+            <button type="button" class="btn ghost small" id="clearDataBtn">
+              Delete saved entries
+            </button>
+          </div>
+
+          <div class="table-scroll">
+            <table>
+              <caption class="sr-only">Most recent health check-ins</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Heart rate (BPM)</th>
+                  <th scope="col">Temp (&deg;C)</th>
+                  <th scope="col">Sleep (h)</th>
+                  <th scope="col">Mood</th>
+                  <th scope="col">Notes</th>
+                </tr>
+              </thead>
+              <tbody id="historyBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ===== HEALTH GUIDANCE ===== -->
+        <div class="card guidance" id="guidance">
+          <h3>Health Guidance</h3>
+          <ul>
+            <li>
+              <strong>Review changes</strong> by comparing today's entry
+              with your previous entries.
+            </li>
+            <li>
+              <strong>Add notes</strong> whenever something feels different,
+              even if it seems small.
+            </li>
+            <li>
+              <strong>Contact the crew medical officer</strong> if you feel
+              unwell or concerned.
+            </li>
+            <li>
+              <strong>Alert the crew</strong> and follow mission medical
+              protocols for urgent or worsening symptoms.
+            </li>
+          </ul>
+          <p class="muted small-text">
+            AstroCare does not diagnose or decide what is normal for you.
+            Your medical team does.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SPACE HAZARDS ===== -->
+    <section id="hazards" class="section alt">
+      <div class="container">
+        <h2 class="section-title">Space Hazards Awareness</h2>
+
+        <p class="muted">
+          Human spaceflight involves several environmental and operational
+          hazards. The following cards provide brief, general educational
+          summaries of risks that can affect astronaut health and well-being.
+        </p>
+
+        <div class="grid grid-4">
+          <article class="card hazard">
+            <div class="icon" aria-hidden="true">&#9762;</div>
+            <h3>Space Radiation</h3>
+            <p>
+              Beyond Earth's protective magnetic field, astronauts are exposed
+              to more radiation. Over long missions, this is a concern for
+              long-term health, so exposure is carefully monitored.
+            </p>
+          </article>
+
+          <article class="card hazard">
+            <div class="icon" aria-hidden="true">&#9737;</div>
+            <h3>Altered Gravity</h3>
+            <p>
+              Living in microgravity affects the body, including muscles,
+              bones, and the cardiovascular system. Exercise and medical
+              monitoring help the crew adapt.
+            </p>
+          </article>
+
+          <article class="card hazard">
+            <div class="icon" aria-hidden="true">&#9728;</div>
+            <h3>Isolation and Confinement</h3>
+            <p>
+              Small crews, limited space, and distance from home can affect
+              mood, sleep, and teamwork. Noticing changes early supports
+              well-being and performance.
+            </p>
+          </article>
+
+          <article class="card hazard">
+            <div class="icon" aria-hidden="true">&#9729;</div>
+            <h3>Hostile, Closed Environments</h3>
+            <p>
+              A spacecraft is a sealed habitat. Air quality, noise,
+              temperature, and cleanliness all shape crew health and need
+              ongoing attention.
+            </p>
+          </article>
+
+          <article class="card hazard">
+            <div class="icon" aria-hidden="true">&#128225;</div>
+            <h3>Distance from Earth</h3>
+            <p>
+              As missions travel farther from Earth, communication delays
+              can increase. Access to immediate medical support, supplies,
+              and emergency assistance may become more difficult.
+            </p>
+          </article>
+        </div>
+
+        <div class="card">
+          <h3>Why are these hazards important?</h3>
+          <p>
+            Space hazards can affect physical health, mental well-being,
+            and mission performance. Understanding these risks helps explain
+            why astronauts need regular health monitoring and support
+            throughout a mission.
+          </p>
+        </div>
+
+        <p class="small-text muted">
+          Explore official information:
+          <a href="https://www.nasa.gov/hrp/"
+             target="_blank" rel="noopener noreferrer">
+            NASA Human Research Program
+          </a>
+          |
+          <a href="https://www.nasa.gov/hrp/hazards/"
+             target="_blank" rel="noopener noreferrer">
+            NASA Human Spaceflight Hazards
+          </a>
+        </p>
+      </div>
+    </section>
+
+    <!-- ===== ABOUT ===== -->
+    <section id="about" class="section">
+      <div class="container narrow">
+        <h2 class="section-title">About AstroCare</h2>
+
+        <h3>The problem</h3>
+        <p>
+          On long-duration space missions, astronauts are far from hospitals
+          and can face delays in communicating with Earth. Environmental
+          hazards, demanding mission conditions, and changes in physical
+          or mental well-being make regular health monitoring important.
+          Small day-to-day changes can be difficult to notice without
+          a consistent record.
+        </p>
+
+        <h3>Our solution</h3>
+        <p>
+          AstroCare is a browser-based astronaut health monitoring prototype.
+          It provides a simple daily check-in, a history of recorded entries,
+          and trend charts to help users review changes over time.
+          It also provides general health guidance and space hazard awareness.
+        </p>
+
+        <h3>Why these four health indicators?</h3>
+        <p>
+          We selected heart rate, body temperature, sleep duration, and mood
+          as four simple indicators for an educational daily check-in.
+          Together, they offer a basic snapshot of physical and emotional
+          well-being. Tracking them over time may help users notice changes
+          and decide when to discuss concerns with their medical team.
+        </p>
+        <p>
+          These indicators are not a complete health assessment and cannot
+          independently determine an astronaut's medical condition.
+        </p>
+
+        <h3>How AstroCare works</h3>
+        <ul>
+          <li>Users manually enter their daily health information.</li>
+          <li>Entries are saved in the browser using local storage.</li>
+          <li>Users can review recent check-ins in a history table.</li>
+          <li>Trend charts help users visualize recorded values over time.</li>
+          <li>General guidance encourages communication with the crew medical officer.</li>
+        </ul>
+
+        <h3>Current limitations</h3>
+        <ul>
+          <li>AstroCare is an educational prototype, not a medical device.</li>
+          <li>It has not been clinically validated.</li>
+          <li>Sample or demonstration values are illustrative, not real astronaut measurements or live NASA data.</li>
+          <li>Data is manually entered and stored only in the current browser.</li>
+          <li>It does not provide diagnosis, automated medical alerts, or a connection to a medical team.</li>
+        </ul>
+
+        <h3>Future possibilities</h3>
+        <ul>
+          <li>Integration with validated wearable health sensors.</li>
+          <li>Secure data sharing and review by authorized medical teams.</li>
+          <li>Multilingual support for international astronaut crews.</li>
+          <li>Improved communication and follow-up tools for long-duration missions.</li>
+          <li>Further research into reliable health monitoring in space environments.</li>
+        </ul>
+
+        <h3>Research and references</h3>
+        <p>
+          AstroCare is inspired by the challenges of human spaceflight
+          and the need to support astronaut health during missions.
+          For additional background, visit the official
+          <a href="https://www.nasa.gov/hrp/"
+             target="_blank" rel="noopener noreferrer">
+            NASA Human Research Program
+          </a>.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer">
+    <div class="container">
+      <p>
+        AstroCare &middot; Team Cosmic Pixels &middot;
+        NASA Space Apps Challenge 2026 &middot; For educational purposes only
+      </p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
